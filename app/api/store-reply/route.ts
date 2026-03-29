@@ -13,8 +13,8 @@ const replies = new Map<string, Reply[]>()
 const AUTH_TOKEN = process.env.KRAKEN_REPLY_TOKEN || 'kraken-readlight-2026'
 
 export async function POST(req: NextRequest) {
-  const auth = req.headers.get('x-kraken-token')
-  if (auth !== AUTH_TOKEN) {
+  const auth = (req.headers.get('x-kraken-token') || '').trim()
+  if (auth !== AUTH_TOKEN.trim()) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
