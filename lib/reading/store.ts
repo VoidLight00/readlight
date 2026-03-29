@@ -27,10 +27,13 @@ interface ReadingStore {
 
   startSession: (bookId: string, pageGoal: number) => string
   endSession: (pagesRead: number) => void
+  pauseSession: () => void
+  resumeSession: () => void
   getActiveSession: () => ReadingSession | undefined
   getSessionsByBook: (bookId: string) => ReadingSession[]
   addCapture: (sessionId: string, passage: string, note?: string, tags?: string[]) => Capture
   updateCapture: (sessionId: string, captureId: string, updates: Partial<Capture>) => void
+  deleteCapture: (sessionId: string, captureId: string) => void
   getTodayStats: () => { sessionTime: number; capturesCount: number }
   updateWeeklyMinutes: (minutes: number) => void
 }
@@ -130,6 +133,7 @@ export const useReadingStore = create<ReadingStore>()(
           id: uuidv4(),
           bookId,
           startTime: new Date().toISOString(),
+          totalPausedMs: 0,
           pagesRead: 0,
           pageGoal,
           captures: [],
@@ -142,22 +146,62 @@ export const useReadingStore = create<ReadingStore>()(
       },
 
       endSession: (pagesRead) => {
-        const { activeSessionId, streak, badges } = get()
+        const { activeSessionId, sessions, streak, badges } = get()
         if (!activeSessionId) return
 
-        const endTime = new Date().toISOString()
+        const session = sessions.find((s) => s.id === activeSessionId)
+        const now = new Date()
+        const endTime = now.toISOString()
+
+        // If paused at end, add remaining pause time
+        const extraPausedMs = session?.pausedAt
+          ? now.getTime() - new Date(session.pausedAt).getTime()
+          : 0
+        const finalPausedMs = (session?.totalPausedMs || 0) + extraPausedMs
+
         const updatedStreak = checkAndUpdateStreak(streak)
         const updatedBadges = checkBadges(updatedStreak.current, badges)
 
         set((state) => ({
           sessions: state.sessions.map((s) =>
             s.id === activeSessionId
-              ? { ...s, endTime, pagesRead }
+              ? { ...s, endTime, pagesRead, totalPausedMs: finalPausedMs, pausedAt: undefined }
               : s
           ),
           activeSessionId: null,
           streak: updatedStreak,
           badges: updatedBadges,
+        }))
+      },
+
+      pauseSession: () => {
+        const { activeSessionId } = get()
+        if (!activeSessionId) return
+
+        set((state) => ({
+          sessions: state.sessions.map((s) =>
+            s.id === activeSessionId && !s.pausedAt
+              ? { ...s, pausedAt: new Date().toISOString() }
+              : s
+          ),
+        }))
+      },
+
+      resumeSession: () => {
+        const { activeSessionId } = get()
+        if (!activeSessionId) return
+
+        const now = Date.now()
+        set((state) => ({
+          sessions: state.sessions.map((s) => {
+            if (s.id !== activeSessionId || !s.pausedAt) return s
+            const pausedDuration = now - new Date(s.pausedAt).getTime()
+            return {
+              ...s,
+              totalPausedMs: s.totalPausedMs + pausedDuration,
+              pausedAt: undefined,
+            }
+          }),
         }))
       },
 
@@ -199,6 +243,16 @@ export const useReadingStore = create<ReadingStore>()(
                     c.id === captureId ? { ...c, ...updates } : c
                   ),
                 }
+              : s
+          ),
+        }))
+      },
+
+      deleteCapture: (sessionId, captureId) => {
+        set((state) => ({
+          sessions: state.sessions.map((s) =>
+            s.id === sessionId
+              ? { ...s, captures: s.captures.filter((c) => c.id !== captureId) }
               : s
           ),
         }))

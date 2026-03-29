@@ -15,6 +15,8 @@ export interface ReadingSession {
   bookId: string
   startTime: string
   endTime?: string
+  pausedAt?: string
+  totalPausedMs: number
   pagesRead: number
   pageGoal: number
   captures: Capture[]

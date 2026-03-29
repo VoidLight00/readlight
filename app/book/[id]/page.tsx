@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
 import { useBookStore } from '@/lib/books/store'
 import { useReadingStore } from '@/lib/reading/store'
+import { CaptureCard } from '@/components/CaptureCard'
 import { generateMarkdown, getExportFilename, downloadMarkdown } from '@/lib/storage/obsidian'
 
 const statusLabels = {
@@ -52,7 +53,9 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
     return total + (new Date(s.endTime).getTime() - new Date(s.startTime).getTime())
   }, 0)
   const pagesReadTotal = bookSessions.reduce((sum, s) => sum + s.pagesRead, 0)
-  const allCaptures = bookSessions.flatMap((s) => s.captures)
+  const allCaptures = bookSessions.flatMap((s) =>
+    s.captures.map((c) => ({ ...c, sessionId: s.id }))
+  )
 
   const progressPercent = book.totalPages
     ? Math.min(100, Math.round(((book.currentPage || 0) / book.totalPages) * 100))
@@ -85,14 +88,27 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
 
   return (
     <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-white">{book.title}</h1>
-          <p className="text-sm text-muted-foreground">{book.author}</p>
+      <div className="flex items-start gap-4">
+        {book.coverUrl ? (
+          <img
+            src={book.coverUrl}
+            alt={book.title}
+            className="w-20 h-[110px] rounded object-cover shrink-0"
+          />
+        ) : (
+          <div className="w-20 h-[110px] rounded bg-secondary flex items-center justify-center shrink-0 text-3xl">
+            📖
+          </div>
+        )}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between">
+            <h1 className="text-xl font-bold text-white">{book.title}</h1>
+            <Badge className="bg-primary/20 text-primary border-0 shrink-0 ml-2">
+              {statusLabels[book.status]}
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground mt-1">{book.author}</p>
         </div>
-        <Badge className="bg-primary/20 text-primary border-0">
-          {statusLabels[book.status]}
-        </Badge>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
@@ -210,32 +226,11 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
             캡처한 글귀 ({allCaptures.length})
           </p>
           {allCaptures.map((capture) => (
-            <Card key={capture.id} className="bg-card border-border">
-              <CardContent className="p-4 space-y-2">
-                <p className="text-sm text-white italic">&ldquo;{capture.passage}&rdquo;</p>
-                {capture.note && (
-                  <p className="text-xs text-muted-foreground">{capture.note}</p>
-                )}
-                {capture.tags.length > 0 && (
-                  <div className="flex gap-1 flex-wrap">
-                    {capture.tags.map((tag) => (
-                      <span key={tag} className="text-xs bg-secondary px-1.5 py-0.5 rounded">
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-                {capture.aiInsights && (
-                  <div className="mt-2 p-2 bg-primary/5 rounded border border-primary/10">
-                    <ul className="text-xs text-muted-foreground space-y-1">
-                      {capture.aiInsights.bullets.map((b, i) => (
-                        <li key={i}>• {b}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <CaptureCard
+              key={capture.id}
+              capture={capture}
+              sessionId={capture.sessionId}
+            />
           ))}
         </div>
       )}

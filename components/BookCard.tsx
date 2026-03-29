@@ -36,21 +36,34 @@ export function BookCard({ book, sessionsCount = 0, capturesCount = 0, totalTime
     <Link href={`/book/${book.id}`}>
       <Card className="bg-card border-border hover:border-primary/50 transition-colors cursor-pointer">
         <CardContent className="p-4">
-          <div className="flex justify-between items-start mb-2">
-            <h3 className="font-semibold text-white truncate flex-1 mr-2">
-              {book.title}
-            </h3>
-            <Badge className={`${statusColors[book.status]} border-0 text-xs shrink-0`}>
-              {statusLabels[book.status]}
-            </Badge>
-          </div>
-
-          <p className="text-sm text-muted-foreground mb-3">{book.author}</p>
-
-          <div className="flex gap-3 text-xs text-muted-foreground">
-            <span>{sessionsCount}회 세션</span>
-            <span>{capturesCount}개 글귀</span>
-            {totalTime > 0 && <span>{formatTime(totalTime)}</span>}
+          <div className="flex gap-3">
+            {book.coverUrl ? (
+              <img
+                src={book.coverUrl}
+                alt={book.title}
+                className="w-12 h-16 rounded object-cover shrink-0"
+              />
+            ) : (
+              <div className="w-12 h-16 rounded bg-secondary flex items-center justify-center shrink-0 text-xl">
+                📖
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex justify-between items-start mb-1">
+                <h3 className="font-semibold text-white truncate flex-1 mr-2">
+                  {book.title}
+                </h3>
+                <Badge className={`${statusColors[book.status]} border-0 text-xs shrink-0`}>
+                  {statusLabels[book.status]}
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground mb-2">{book.author}</p>
+              <div className="flex gap-3 text-xs text-muted-foreground">
+                <span>{sessionsCount}회 세션</span>
+                <span>{capturesCount}개 글귀</span>
+                {totalTime > 0 && <span>{formatTime(totalTime)}</span>}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

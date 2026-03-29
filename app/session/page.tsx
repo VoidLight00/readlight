@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useBookStore } from '@/lib/books/store'
 import { useReadingStore } from '@/lib/reading/store'
+import { fetchBookCover } from '@/lib/books/cover-service'
 import type { Book } from '@/types'
 
 function formatTimer(ms: number): string {
@@ -20,7 +21,7 @@ function formatTimer(ms: number): string {
 export default function SessionPage() {
   const router = useRouter()
   const { books, addBook, getBook, updateBook } = useBookStore()
-  const { activeSessionId, startSession, endSession, getActiveSession, updateWeeklyMinutes } = useReadingStore()
+  const { activeSessionId, startSession, endSession, pauseSession, resumeSession, getActiveSession, updateWeeklyMinutes } = useReadingStore()
 
   const [phase, setPhase] = useState<'select' | 'goal' | 'active' | 'end'>('select')
   const [selectedBook, setSelectedBook] = useState<Book | null>(null)
@@ -33,26 +34,35 @@ export default function SessionPage() {
 
   const activeSession = getActiveSession()
 
+  const isPaused = !!activeSession?.pausedAt
+
   useEffect(() => {
     if (activeSessionId && activeSession) {
       setPhase('active')
-      const start = new Date(activeSession.startTime).getTime()
-      setElapsed(Date.now() - start)
     }
   }, [activeSessionId, activeSession])
 
   useEffect(() => {
     if (phase !== 'active') return
 
-    const interval = setInterval(() => {
+    function calcElapsed() {
       const session = getActiveSession()
-      if (session) {
-        setElapsed(Date.now() - new Date(session.startTime).getTime())
-      }
+      if (!session) return 0
+      const start = new Date(session.startTime).getTime()
+      const now = session.pausedAt
+        ? new Date(session.pausedAt).getTime()
+        : Date.now()
+      return now - start - (session.totalPausedMs || 0)
+    }
+
+    setElapsed(calcElapsed())
+
+    const interval = setInterval(() => {
+      setElapsed(calcElapsed())
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [phase, getActiveSession])
+  }, [phase, getActiveSession, isPaused])
 
   function handleSelectBook(book: Book) {
     setSelectedBook(book)
@@ -61,12 +71,21 @@ export default function SessionPage() {
 
   function handleAddBook() {
     if (!newTitle.trim()) return
-    const book = addBook(newTitle.trim(), newAuthor.trim() || '작자 미상')
+    const title = newTitle.trim()
+    const author = newAuthor.trim() || '작자 미상'
+    const book = addBook(title, author)
     setSelectedBook(book)
     setNewTitle('')
     setNewAuthor('')
     setShowNewBook(false)
     setPhase('goal')
+
+    // Fetch cover in background — don't block UI
+    fetchBookCover(title, author).then((coverUrl) => {
+      if (coverUrl) {
+        updateBook(book.id, { coverUrl })
+      }
+    })
   }
 
   function handleStartSession() {
@@ -91,7 +110,7 @@ export default function SessionPage() {
     }
 
     setPhase('end')
-  }, [pagesRead, elapsed, endSession, updateWeeklyMinutes, selectedBook, getBook, updateBook])
+  }, [pagesRead, elapsed, endSession, updateWeeklyMinutes, selectedBook, getBook, updateBook, resumeSession, isPaused])
 
   if (phase === 'select') {
     const readingBooks = books.filter((b) => b.status === 'reading')
@@ -205,10 +224,21 @@ export default function SessionPage() {
           <p className="text-5xl font-mono font-bold text-white">
             {formatTimer(elapsed)}
           </p>
+          {isPaused && (
+            <p className="text-sm text-yellow-400 animate-pulse">일시정지 중...</p>
+          )}
           <p className="text-sm text-muted-foreground">
             목표: {activeSession?.pageGoal || pageGoal}페이지
           </p>
         </div>
+
+        <Button
+          variant="outline"
+          className="w-full min-h-[44px]"
+          onClick={() => isPaused ? resumeSession() : pauseSession()}
+        >
+          {isPaused ? '▶️ 재개' : '⏸ 일시정지'}
+        </Button>
 
         <Button
           variant="outline"

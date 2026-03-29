@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { CaptureForm } from '@/components/CaptureForm'
+import { CaptureCard } from '@/components/CaptureCard'
 import { useReadingStore } from '@/lib/reading/store'
 import { useBookStore } from '@/lib/books/store'
 import type { AIInsight } from '@/types'
@@ -29,6 +30,7 @@ export default function CapturePage() {
         s.captures.map((c) => ({
           ...c,
           bookId: s.bookId,
+          sessionId: s.id,
         }))
       )
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -90,30 +92,16 @@ export default function CapturePage() {
       <div className="space-y-3">
         {filteredCaptures.map((capture) => {
           const book = getBook(capture.bookId)
+          const bookInfo = book
+            ? `${book.title} — ${book.author}`
+            : '알 수 없는 책'
           return (
-            <Card key={capture.id} className="bg-card border-border">
-              <CardContent className="p-4 space-y-2">
-                <p className="text-sm text-white italic">&ldquo;{capture.passage}&rdquo;</p>
-                {capture.note && (
-                  <p className="text-xs text-muted-foreground">{capture.note}</p>
-                )}
-                {capture.tags.length > 0 && (
-                  <div className="flex gap-1 flex-wrap">
-                    {capture.tags.map((tag) => (
-                      <span key={tag} className="text-xs bg-secondary px-1.5 py-0.5 rounded">
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-                <div className="flex items-center justify-between text-xs text-muted-foreground pt-1">
-                  <span>
-                    {book ? `${book.title} — ${book.author}` : '알 수 없는 책'}
-                  </span>
-                  <span>{new Date(capture.createdAt).toLocaleDateString('ko-KR')}</span>
-                </div>
-              </CardContent>
-            </Card>
+            <CaptureCard
+              key={capture.id}
+              capture={capture}
+              sessionId={capture.sessionId}
+              bookInfo={bookInfo}
+            />
           )
         })}
         {filteredCaptures.length === 0 && search.trim() && (
