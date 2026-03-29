@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
 import { BookIcon, ExportIcon, TrashIcon, RulerIcon } from '@/components/icons'
+import { KrakenConnect } from '@/components/KrakenConnect'
 import { useBookStore } from '@/lib/books/store'
 import { useReadingStore } from '@/lib/reading/store'
 import { CaptureCard } from '@/components/CaptureCard'
@@ -233,6 +234,14 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
           ))}
         </div>
       )}
+
+      {/* Kraken Connect */}
+      <KrakenConnect
+        book={book.title}
+        author={book.author}
+        page={book.currentPage}
+        captures={allCaptures.map((c) => c.passage)}
+      />
 
       {/* Actions */}
       <div className="space-y-2 pt-4 border-t border-border">

@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { CaptureForm } from '@/components/CaptureForm'
 import { CaptureCard } from '@/components/CaptureCard'
 import { BookIcon } from '@/components/icons'
+import { KrakenConnect } from '@/components/KrakenConnect'
 import { useReadingStore } from '@/lib/reading/store'
 import { useBookStore } from '@/lib/books/store'
 import type { AIInsight } from '@/types'
@@ -13,6 +14,13 @@ export default function CapturePage() {
   const { activeSessionId, sessions, addCapture, updateCapture } = useReadingStore()
   const { getBook } = useBookStore()
   const [search, setSearch] = useState('')
+
+  const activeBook = useMemo(() => {
+    if (!activeSessionId) return undefined
+    const session = sessions.find((s) => s.id === activeSessionId)
+    if (!session) return undefined
+    return getBook(session.bookId)
+  }, [activeSessionId, sessions, getBook])
 
   function handleSave(passage: string, note?: string, tags?: string[], aiInsights?: AIInsight) {
     if (!activeSessionId) return
@@ -54,6 +62,11 @@ export default function CapturePage() {
           인상 깊은 구절을 기록하세요
         </p>
         <CaptureForm onSave={handleSave} />
+
+        <KrakenConnect
+          book={activeBook?.title}
+          author={activeBook?.author}
+        />
       </div>
     )
   }

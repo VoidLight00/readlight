@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PlayIcon, PauseIcon, PenIcon, PlusIcon, ArrowLeftIcon, CheckIcon } from '@/components/icons'
+import { KrakenConnect } from '@/components/KrakenConnect'
 import { useBookStore } from '@/lib/books/store'
 import { useReadingStore } from '@/lib/reading/store'
 import { fetchBookCover } from '@/lib/books/cover-service'
@@ -253,6 +254,12 @@ export default function SessionPage() {
             <PenIcon size={16} /> 캡처하기
           </Button>
         </div>
+
+        <KrakenConnect
+          book={selectedBook?.title}
+          author={selectedBook?.author}
+          page={activeSession?.pageGoal}
+        />
 
         <div className="border-t border-border pt-6 space-y-3">
           <label className="text-caption">읽은 페이지 수</label>
