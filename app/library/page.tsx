@@ -68,10 +68,21 @@ export default function LibraryPage() {
           {filteredBooks.length === 0 ? (
             <div className="text-center py-12">
               <LibraryIcon size={32} className="text-muted-foreground mx-auto mb-3" />
-              <p className="text-muted-foreground">아직 등록된 책이 없습니다</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                세션 탭에서 새 책을 추가해보세요
-              </p>
+              {debouncedQuery ? (
+                <>
+                  <p className="text-muted-foreground">검색 결과가 없습니다</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    다른 키워드로 검색해보세요
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-muted-foreground">아직 등록된 책이 없습니다</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    세션 탭에서 새 책을 추가해보세요
+                  </p>
+                </>
+              )}
             </div>
           ) : (
             <div className="grid gap-3">

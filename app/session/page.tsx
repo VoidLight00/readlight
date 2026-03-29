@@ -123,8 +123,11 @@ export default function SessionPage() {
             {readingBooks.map((book) => (
               <div
                 key={book.id}
-                className="border border-border hover:border-primary/50 transition-colors cursor-pointer p-4"
+                role="button"
+                tabIndex={0}
+                className="border border-border hover:border-primary/50 transition-colors cursor-pointer p-4 focus:outline-none focus:border-primary"
                 onClick={() => handleSelectBook(book)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSelectBook(book) } }}
               >
                 <p className="font-medium text-white">{book.title}</p>
                 <p className="text-sm text-muted-foreground">{book.author}</p>
@@ -211,7 +214,7 @@ export default function SessionPage() {
     return (
       <div className="max-w-lg mx-auto px-4 py-8 space-y-8">
         <div className="flex items-center justify-between">
-          <button onClick={() => router.push('/')} className="text-muted-foreground hover:text-white transition-colors">
+          <button onClick={() => router.push('/')} aria-label="홈으로 돌아가기" className="text-muted-foreground hover:text-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
             <ArrowLeftIcon size={20} />
           </button>
           <p className="text-sm text-muted-foreground">
@@ -276,7 +279,7 @@ export default function SessionPage() {
     <div className="max-w-lg mx-auto px-4 py-8 space-y-6 text-center">
       <CheckIcon size={40} className="text-primary mx-auto" />
       <h1 className="text-title text-white">세션 완료</h1>
-      <p className="text-muted-foreground">
+      <p className="text-muted-foreground" style={{ fontVariantNumeric: 'tabular-nums' }}>
         {formatTimer(elapsed)} 동안 {pagesRead || 0}페이지를 읽었습니다
       </p>
       <div className="flex gap-3">

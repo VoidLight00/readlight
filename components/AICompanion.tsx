@@ -55,7 +55,7 @@ export function AICompanion({ passage, onInsightsGenerated }: AICompanionProps) 
   if (state === 'loading') {
     return (
       <div className="flex items-center gap-3 p-3 border-l-[3px] border-l-primary bg-[#111111]">
-        <SparkleIcon size={16} className="text-primary shrink-0" />
+        <SparkleIcon size={16} className="text-primary shrink-0 animate-pulse" />
         <p className="text-sm text-muted-foreground">생각하는 중...</p>
       </div>
     )

@@ -22,6 +22,9 @@ export function CaptureForm({ onSave }: CaptureFormProps) {
   const [showAI, setShowAI] = useState(false)
   const [aiInsights, setAiInsights] = useState<AIInsight | undefined>()
   const [ocrLoading, setOcrLoading] = useState(false)
+  const [tagLoading, setTagLoading] = useState(false)
+
+  const PASSAGE_MAX = 2000
 
   async function handleOCR() {
     setOcrLoading(true)
@@ -68,12 +71,15 @@ export function CaptureForm({ onSave }: CaptureFormProps) {
 
   async function handleSuggestTags() {
     if (!passage) return
+    setTagLoading(true)
     try {
       const suggested = await getTagSuggestions(passage)
       const newTags = [...new Set([...tags, ...suggested])]
       setTags(newTags)
     } catch (error) {
       console.error('태그 제안 실패:', error)
+    } finally {
+      setTagLoading(false)
     }
   }
 
@@ -103,13 +109,23 @@ export function CaptureForm({ onSave }: CaptureFormProps) {
         </TabsList>
 
         <TabsContent value="text">
-          <textarea
-            placeholder="인상 깊은 구절을 입력하세요..."
-            className="w-full min-h-[120px] bg-[var(--surface-1)] border border-border p-3 text-white placeholder:text-muted-foreground resize-none focus:outline-none focus:border-primary"
-            value={passage}
-            onChange={(e) => setPassage(e.target.value)}
-            disabled={saved}
-          />
+          <div className="relative">
+            <textarea
+              placeholder="인상 깊은 구절을 입력하세요..."
+              className="w-full min-h-[120px] bg-[var(--surface-1)] border border-border p-3 text-white placeholder:text-muted-foreground resize-none focus:outline-none focus:border-primary"
+              value={passage}
+              onChange={(e) => setPassage(e.target.value.slice(0, PASSAGE_MAX))}
+              disabled={saved}
+              maxLength={PASSAGE_MAX}
+            />
+            {!saved && (
+              <span className={`absolute bottom-2 right-2 text-xs ${
+                passage.length > PASSAGE_MAX * 0.9 ? 'text-destructive' : 'text-muted-foreground'
+              }`}>
+                {passage.length} / {PASSAGE_MAX}
+              </span>
+            )}
+          </div>
         </TabsContent>
 
         <TabsContent value="camera">
@@ -155,11 +171,11 @@ export function CaptureForm({ onSave }: CaptureFormProps) {
                 variant="outline"
                 size="sm"
                 onClick={handleSuggestTags}
-                disabled={saved}
+                disabled={saved || tagLoading}
                 className="shrink-0 gap-1.5"
               >
                 <SparkleIcon size={14} />
-                태그
+                {tagLoading ? '제안 중...' : '태그'}
               </Button>
             </div>
 

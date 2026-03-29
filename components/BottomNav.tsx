@@ -15,7 +15,7 @@ export function BottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border">
+    <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border pb-[env(safe-area-inset-bottom)]" role="navigation" aria-label="메인 내비게이션">
       <div className="max-w-lg mx-auto flex">
         {navItems.map(({ href, label, Icon }) => {
           const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href)
@@ -23,7 +23,9 @@ export function BottomNav() {
             <Link
               key={href}
               href={href}
-              className={`flex-1 flex flex-col items-center py-3 transition-colors min-h-[44px] relative ${
+              aria-label={label}
+              aria-current={isActive ? 'page' : undefined}
+              className={`flex-1 flex flex-col items-center py-3 transition-colors min-h-[48px] relative ${
                 isActive ? 'text-primary' : 'text-white/40 hover:text-white/70'
               }`}
             >

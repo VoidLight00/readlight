@@ -33,6 +33,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
   const { sessions } = useReadingStore()
   const [editingTotalPages, setEditingTotalPages] = useState(false)
   const [totalPagesInput, setTotalPagesInput] = useState('')
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   const book = getBook(id)
 
@@ -243,14 +244,32 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
           <ExportIcon size={16} />
           옵시디언으로 내보내기
         </Button>
-        <Button
-          variant="outline"
-          onClick={handleDelete}
-          className="w-full min-h-[44px] text-destructive hover:text-destructive gap-2"
-        >
-          <TrashIcon size={16} />
-          책 삭제
-        </Button>
+        {!confirmDelete ? (
+          <Button
+            variant="outline"
+            onClick={() => setConfirmDelete(true)}
+            className="w-full min-h-[44px] text-destructive hover:text-destructive gap-2"
+          >
+            <TrashIcon size={16} />
+            책 삭제
+          </Button>
+        ) : (
+          <div className="flex gap-2">
+            <Button
+              onClick={handleDelete}
+              className="flex-1 bg-destructive text-destructive-foreground hover:bg-destructive/90 min-h-[44px]"
+            >
+              삭제 확인
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDelete(false)}
+              className="flex-1 min-h-[44px]"
+            >
+              취소
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )

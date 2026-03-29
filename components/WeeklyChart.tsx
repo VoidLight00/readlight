@@ -16,10 +16,10 @@ export function WeeklyChart({ weeklyMinutes }: WeeklyChartProps) {
         <p className="text-caption">이번 주 독서 시간</p>
         <div className="flex flex-col items-center justify-center h-24 text-center">
           <p className="text-sm text-muted-foreground">
-            아직 이번 주 기록이 없습니다
+            이번 주 첫 페이지를 넘겨보세요
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            첫 세션을 시작해보세요
+            작은 시작이 큰 변화를 만듭니다
           </p>
         </div>
       </div>

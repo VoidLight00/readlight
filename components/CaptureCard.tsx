@@ -21,6 +21,7 @@ export function CaptureCard({ capture, sessionId, bookInfo }: CaptureCardProps) 
   const [note, setNote] = useState(capture.note || '')
   const [tags, setTags] = useState<string[]>(capture.tags)
   const [tagInput, setTagInput] = useState('')
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   function handleSave() {
     updateCapture(sessionId, capture.id, {
@@ -40,9 +41,7 @@ export function CaptureCard({ capture, sessionId, bookInfo }: CaptureCardProps) 
   }
 
   function handleDelete() {
-    if (window.confirm('이 글귀를 삭제할까요?')) {
-      deleteCapture(sessionId, capture.id)
-    }
+    deleteCapture(sessionId, capture.id)
   }
 
   function handleAddTag() {
@@ -157,20 +156,39 @@ export function CaptureCard({ capture, sessionId, bookInfo }: CaptureCardProps) 
         <div className="flex items-center justify-between text-xs text-muted-foreground pt-1">
           <span>{bookInfo || new Date(capture.createdAt).toLocaleDateString('ko-KR')}</span>
           <div className="flex gap-1">
-            <button
-              onClick={() => setEditing(true)}
-              className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:text-primary transition-colors"
-              aria-label="편집"
-            >
-              <EditIcon size={16} />
-            </button>
-            <button
-              onClick={handleDelete}
-              className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:text-destructive transition-colors"
-              aria-label="삭제"
-            >
-              <TrashIcon size={16} />
-            </button>
+            {confirmDelete ? (
+              <>
+                <button
+                  onClick={handleDelete}
+                  className="px-2 min-h-[44px] flex items-center text-xs text-destructive hover:text-destructive/80 transition-colors"
+                >
+                  삭제
+                </button>
+                <button
+                  onClick={() => setConfirmDelete(false)}
+                  className="px-2 min-h-[44px] flex items-center text-xs text-muted-foreground hover:text-white transition-colors"
+                >
+                  취소
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => setEditing(true)}
+                  className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:text-primary transition-colors"
+                  aria-label="편집"
+                >
+                  <EditIcon size={16} />
+                </button>
+                <button
+                  onClick={() => setConfirmDelete(true)}
+                  className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:text-destructive transition-colors"
+                  aria-label="삭제"
+                >
+                  <TrashIcon size={16} />
+                </button>
+              </>
+            )}
           </div>
         </div>
       </CardContent>

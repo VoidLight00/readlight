@@ -59,7 +59,7 @@ export default function Dashboard() {
       </div>
 
       {/* Today stats */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-6" style={{ fontVariantNumeric: 'tabular-nums' }}>
         <div>
           <p className="text-2xl font-bold text-white">{formatTime(todayStats.sessionTime)}</p>
           <p className="text-caption mt-1">독서 시간</p>
