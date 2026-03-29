@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { BottomNav } from '@/components/BottomNav'
 import './globals.css'
@@ -16,6 +16,20 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'ReadLight — 독서 동반자',
   description: '당신의 독서를 함께하는 동반자',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'ReadLight',
+  },
+  icons: {
+    icon: '/icon.svg',
+    apple: '/icon-192.png',
+  },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#F5A623',
 }
 
 export default function RootLayout({

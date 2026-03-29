@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ReadLight
 
-## Getting Started
+**독서 동반자 앱** - 당신의 독서를 함께하는 동반자
 
-First, run the development server:
+[![CI](https://github.com/VoidLight00/readlight/actions/workflows/ci.yml/badge.svg)](https://github.com/VoidLight00/readlight/actions/workflows/ci.yml)
+
+**Live**: [readlight-one.vercel.app](https://readlight-one.vercel.app)
+
+## Quick Start
 
 ```bash
+git clone https://github.com/VoidLight00/readlight.git
+cd readlight
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Layer | Tech |
+|-------|------|
+| Framework | Next.js 16 + TypeScript |
+| UI | Tailwind CSS + shadcn/ui |
+| State | Zustand (localStorage) |
+| AI | Anthropic SDK (optional) |
+| OCR | Tesseract.js |
+| Charts | Recharts |
 
-## Learn More
+## Free APIs (no key required)
 
-To learn more about Next.js, take a look at the following resources:
+| API | Usage | Limit |
+|-----|-------|-------|
+| [Open Library](https://openlibrary.org/developers/api) | Book covers, search, metadata | Unlimited |
+| [Google Books](https://developers.google.com/books) | Book search, autocomplete | 1,000/day |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run dev       # dev server
+npm run build     # production build
+npm run lint      # ESLint
+npm test          # vitest
+npm run deploy    # Vercel production deploy
+```
 
-## Deploy on Vercel
+## PWA
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+ReadLight is installable as a PWA. Works offline with localStorage persistence.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+MIT
