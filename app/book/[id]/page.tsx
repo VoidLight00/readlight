@@ -170,7 +170,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
               placeholder="총 페이지 수"
               value={totalPagesInput}
               onChange={(e) => setTotalPagesInput(e.target.value)}
-              className="bg-[#111111] border-border min-h-[44px]"
+              className="bg-[var(--surface-1)] border-border min-h-[44px]"
               min="1"
               autoFocus
             />

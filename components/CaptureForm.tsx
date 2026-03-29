@@ -47,8 +47,8 @@ export function CaptureForm({ onSave }: CaptureFormProps) {
       await worker.terminate()
 
       setPassage(text.trim())
-    } catch {
-      // OCR failed silently
+    } catch (error) {
+      console.error('OCR 인식 실패:', error)
     } finally {
       setOcrLoading(false)
     }
@@ -72,8 +72,8 @@ export function CaptureForm({ onSave }: CaptureFormProps) {
       const suggested = await getTagSuggestions(passage)
       const newTags = [...new Set([...tags, ...suggested])]
       setTags(newTags)
-    } catch {
-      // Tag suggestion failed silently
+    } catch (error) {
+      console.error('태그 제안 실패:', error)
     }
   }
 
@@ -105,7 +105,7 @@ export function CaptureForm({ onSave }: CaptureFormProps) {
         <TabsContent value="text">
           <textarea
             placeholder="인상 깊은 구절을 입력하세요..."
-            className="w-full min-h-[120px] bg-[#111111] border border-border p-3 text-white placeholder:text-muted-foreground resize-none focus:outline-none focus:border-primary"
+            className="w-full min-h-[120px] bg-[var(--surface-1)] border border-border p-3 text-white placeholder:text-muted-foreground resize-none focus:outline-none focus:border-primary"
             value={passage}
             onChange={(e) => setPassage(e.target.value)}
             disabled={saved}
@@ -113,7 +113,7 @@ export function CaptureForm({ onSave }: CaptureFormProps) {
         </TabsContent>
 
         <TabsContent value="camera">
-          <div className="border border-border bg-[#111111] p-6 text-center">
+          <div className="border border-border bg-[var(--surface-1)] p-6 text-center">
             <Button
               onClick={handleOCR}
               disabled={ocrLoading}
@@ -135,7 +135,7 @@ export function CaptureForm({ onSave }: CaptureFormProps) {
         <>
           <textarea
             placeholder="개인 메모 (선택사항)"
-            className="w-full min-h-[60px] bg-[#111111] border border-border p-3 text-white placeholder:text-muted-foreground resize-none focus:outline-none focus:border-primary"
+            className="w-full min-h-[60px] bg-[var(--surface-1)] border border-border p-3 text-white placeholder:text-muted-foreground resize-none focus:outline-none focus:border-primary"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             disabled={saved}
@@ -149,7 +149,7 @@ export function CaptureForm({ onSave }: CaptureFormProps) {
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
                 disabled={saved}
-                className="bg-[#111111] border-border"
+                className="bg-[var(--surface-1)] border-border"
               />
               <Button
                 variant="outline"

@@ -75,7 +75,7 @@ export default function Dashboard() {
         <div>
           <p className="text-caption mb-3">마지막으로 읽은 책</p>
           <Link href={`/book/${lastReadingBook.id}`}>
-            <div className="border-l-[3px] border-l-primary pl-4 py-3 hover:bg-[#111111] transition-colors cursor-pointer">
+            <div className="border-l-[3px] border-l-primary pl-4 py-3 hover:bg-[var(--surface-1)] transition-colors cursor-pointer">
               <p className="text-white font-medium">{lastReadingBook.title}</p>
               <p className="text-sm text-muted-foreground">{lastReadingBook.author}</p>
               <span className="text-sm text-primary mt-2 inline-flex items-center gap-1">

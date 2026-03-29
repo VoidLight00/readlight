@@ -22,7 +22,7 @@ const statusLabels: Record<Book['status'], string> = {
 
 const statusColors: Record<Book['status'], string> = {
   reading: 'bg-primary/20 text-primary',
-  completed: 'bg-green-500/20 text-green-400',
+  completed: 'bg-[var(--success-muted)] text-[var(--success)]',
   paused: 'bg-muted text-muted-foreground',
 }
 

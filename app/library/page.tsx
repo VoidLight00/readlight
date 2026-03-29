@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { BookCard } from '@/components/BookCard'
-import { LibraryIcon } from '@/components/icons'
+import { LibraryIcon, SearchIcon } from '@/components/icons'
 import { useBookStore } from '@/lib/books/store'
 import { useReadingStore } from '@/lib/reading/store'
 
@@ -11,6 +12,13 @@ export default function LibraryPage() {
   const { books } = useBookStore()
   const { sessions } = useReadingStore()
   const [tab, setTab] = useState('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [debouncedQuery, setDebouncedQuery] = useState('')
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(searchQuery), 300)
+    return () => clearTimeout(timer)
+  }, [searchQuery])
 
   function getBookStats(bookId: string) {
     const bookSessions = sessions.filter((s) => s.bookId === bookId)
@@ -23,13 +31,30 @@ export default function LibraryPage() {
     return { sessionsCount, capturesCount, totalTime }
   }
 
-  const filteredBooks = tab === 'all'
+  const byStatus = tab === 'all'
     ? books
     : books.filter((b) => b.status === tab)
+
+  const filteredBooks = debouncedQuery
+    ? byStatus.filter((b) =>
+        b.title.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
+        b.author.toLowerCase().includes(debouncedQuery.toLowerCase())
+      )
+    : byStatus
 
   return (
     <div className="max-w-lg mx-auto px-4 py-8 space-y-4">
       <h1 className="text-title text-white">서재</h1>
+
+      <div className="relative">
+        <SearchIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          placeholder="책 제목 또는 저자 검색..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="bg-[var(--surface-1)] border-border pl-9"
+        />
+      </div>
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="bg-secondary">

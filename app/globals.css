@@ -69,6 +69,8 @@
   --text-2: #999999;
   --text-3: #555555;
   --danger: #EF4444;
+  --success: #22C55E;
+  --success-muted: rgba(34, 197, 94, 0.2);
 }
 
 body {

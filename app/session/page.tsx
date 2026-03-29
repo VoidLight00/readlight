@@ -81,6 +81,8 @@ export default function SessionPage() {
       if (coverUrl) {
         updateBook(book.id, { coverUrl })
       }
+    }).catch(() => {
+      // Cover fetch failed — non-critical, continue without cover
     })
   }
 
@@ -146,13 +148,13 @@ export default function SessionPage() {
               placeholder="책 제목"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              className="bg-[#111111] border-border"
+              className="bg-[var(--surface-1)] border-border"
             />
             <Input
               placeholder="저자"
               value={newAuthor}
               onChange={(e) => setNewAuthor(e.target.value)}
-              className="bg-[#111111] border-border"
+              className="bg-[var(--surface-1)] border-border"
             />
             <div className="flex gap-2">
               <Button
@@ -190,7 +192,7 @@ export default function SessionPage() {
             type="number"
             value={pageGoal}
             onChange={(e) => setPageGoal(e.target.value)}
-            className="bg-[#111111] border-border text-center text-2xl"
+            className="bg-[var(--surface-1)] border-border text-center text-2xl"
             min="1"
           />
         </div>
@@ -256,7 +258,7 @@ export default function SessionPage() {
             placeholder="0"
             value={pagesRead}
             onChange={(e) => setPagesRead(e.target.value)}
-            className="bg-[#111111] border-border text-center text-xl"
+            className="bg-[var(--surface-1)] border-border text-center text-xl"
             min="0"
           />
           <Button
