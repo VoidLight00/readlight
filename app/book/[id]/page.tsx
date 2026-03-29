@@ -1,6 +1,7 @@
 'use client'
 
 import { use, useState } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -30,6 +31,8 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
   const router = useRouter()
   const { getBook, updateBook, deleteBook } = useBookStore()
   const { sessions } = useReadingStore()
+  const [editingTotalPages, setEditingTotalPages] = useState(false)
+  const [totalPagesInput, setTotalPagesInput] = useState('')
 
   const book = getBook(id)
 
@@ -43,9 +46,6 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
       </div>
     )
   }
-
-  const [editingTotalPages, setEditingTotalPages] = useState(false)
-  const [totalPagesInput, setTotalPagesInput] = useState('')
 
   const bookSessions = sessions.filter((s) => s.bookId === id)
   const totalTime = bookSessions.reduce((total, s) => {
@@ -90,9 +90,11 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
     <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
       <div className="flex items-start gap-4">
         {book.coverUrl ? (
-          <img
+          <Image
             src={book.coverUrl}
             alt={book.title}
+            width={80}
+            height={110}
             className="w-20 h-[110px] rounded object-cover shrink-0"
           />
         ) : (

@@ -23,7 +23,7 @@ export default function SessionPage() {
   const { books, addBook, getBook, updateBook } = useBookStore()
   const { activeSessionId, startSession, endSession, pauseSession, resumeSession, getActiveSession, updateWeeklyMinutes } = useReadingStore()
 
-  const [phase, setPhase] = useState<'select' | 'goal' | 'active' | 'end'>('select')
+  const [manualPhase, setManualPhase] = useState<'select' | 'goal' | 'active' | 'end'>('select')
   const [selectedBook, setSelectedBook] = useState<Book | null>(null)
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
@@ -33,14 +33,12 @@ export default function SessionPage() {
   const [showNewBook, setShowNewBook] = useState(false)
 
   const activeSession = getActiveSession()
-
   const isPaused = !!activeSession?.pausedAt
 
-  useEffect(() => {
-    if (activeSessionId && activeSession) {
-      setPhase('active')
-    }
-  }, [activeSessionId, activeSession])
+  // Derive phase: if there's an active session, override to 'active'
+  const phase = (activeSessionId && activeSession && manualPhase !== 'end')
+    ? 'active'
+    : manualPhase
 
   useEffect(() => {
     if (phase !== 'active') return
@@ -55,7 +53,8 @@ export default function SessionPage() {
       return now - start - (session.totalPausedMs || 0)
     }
 
-    setElapsed(calcElapsed())
+    // Use immediate interval: first tick at 0ms, then every 1s
+    setElapsed(calcElapsed()) // eslint-disable-line react-hooks/set-state-in-effect
 
     const interval = setInterval(() => {
       setElapsed(calcElapsed())
@@ -66,7 +65,7 @@ export default function SessionPage() {
 
   function handleSelectBook(book: Book) {
     setSelectedBook(book)
-    setPhase('goal')
+    setManualPhase('goal')
   }
 
   function handleAddBook() {
@@ -78,7 +77,7 @@ export default function SessionPage() {
     setNewTitle('')
     setNewAuthor('')
     setShowNewBook(false)
-    setPhase('goal')
+    setManualPhase('goal')
 
     // Fetch cover in background — don't block UI
     fetchBookCover(title, author).then((coverUrl) => {
@@ -91,7 +90,7 @@ export default function SessionPage() {
   function handleStartSession() {
     if (!selectedBook) return
     startSession(selectedBook.id, parseInt(pageGoal) || 20)
-    setPhase('active')
+    setManualPhase('active')
   }
 
   const handleEndSession = useCallback(() => {
@@ -109,8 +108,8 @@ export default function SessionPage() {
       }
     }
 
-    setPhase('end')
-  }, [pagesRead, elapsed, endSession, updateWeeklyMinutes, selectedBook, getBook, updateBook, resumeSession, isPaused])
+    setManualPhase('end')
+  }, [pagesRead, elapsed, endSession, updateWeeklyMinutes, selectedBook, getBook, updateBook])
 
   if (phase === 'select') {
     const readingBooks = books.filter((b) => b.status === 'reading')
@@ -281,7 +280,7 @@ export default function SessionPage() {
       <div className="flex gap-3">
         <Button
           onClick={() => {
-            setPhase('select')
+            setManualPhase('select')
             setSelectedBook(null)
             setElapsed(0)
             setPagesRead('')

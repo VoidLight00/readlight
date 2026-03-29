@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { useReadingStore } from '@/lib/reading/store'
 
 describe('ReadingStore', () => {

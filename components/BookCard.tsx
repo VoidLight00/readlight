@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { Book } from '@/types'
@@ -38,9 +39,11 @@ export function BookCard({ book, sessionsCount = 0, capturesCount = 0, totalTime
         <CardContent className="p-4">
           <div className="flex gap-3">
             {book.coverUrl ? (
-              <img
+              <Image
                 src={book.coverUrl}
                 alt={book.title}
+                width={48}
+                height={64}
                 className="w-12 h-16 rounded object-cover shrink-0"
               />
             ) : (

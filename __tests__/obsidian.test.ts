@@ -17,6 +17,7 @@ describe('Obsidian Export', () => {
       bookId: 'book-1',
       startTime: '2026-03-29T10:00:00Z',
       endTime: '2026-03-29T11:00:00Z',
+      totalPausedMs: 0,
       pagesRead: 30,
       pageGoal: 20,
       captures: [
