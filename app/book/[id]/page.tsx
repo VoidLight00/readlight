@@ -4,7 +4,6 @@ import { use, useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
@@ -39,7 +38,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
 
   if (!book) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-6 text-center">
+      <div className="max-w-lg mx-auto px-4 py-8 text-center">
         <p className="text-muted-foreground">책을 찾을 수 없습니다</p>
         <Button variant="outline" onClick={() => router.push('/library')} className="mt-4">
           서재로 돌아가기
@@ -88,7 +87,8 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
+    <div className="max-w-lg mx-auto px-4 py-8 space-y-6">
+      {/* Book header */}
       <div className="flex items-start gap-4">
         {book.coverUrl ? (
           <Image
@@ -96,16 +96,16 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
             alt={book.title}
             width={80}
             height={110}
-            className="w-20 h-[110px] rounded object-cover shrink-0"
+            className="w-20 h-[110px] object-cover shrink-0"
           />
         ) : (
-          <div className="w-20 h-[110px] rounded bg-secondary flex items-center justify-center shrink-0">
-            <BookIcon size={32} className="text-muted-foreground" />
+          <div className="w-20 h-[110px] bg-secondary flex items-center justify-center shrink-0 text-muted-foreground">
+            <BookIcon size={28} />
           </div>
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between">
-            <h1 className="text-xl font-bold text-white">{book.title}</h1>
+            <h1 className="text-title text-white">{book.title}</h1>
             <Badge className="bg-primary/20 text-primary border-0 shrink-0 ml-2">
               {statusLabels[book.status]}
             </Badge>
@@ -114,88 +114,84 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
-        <Card className="bg-card border-border">
-          <CardContent className="p-3 text-center">
-            <p className="text-xl font-bold text-primary">{bookSessions.length}</p>
-            <p className="text-xs text-muted-foreground">세션</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-card border-border">
-          <CardContent className="p-3 text-center">
-            <p className="text-xl font-bold text-primary">{pagesReadTotal}</p>
-            <p className="text-xs text-muted-foreground">페이지</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-card border-border">
-          <CardContent className="p-3 text-center">
-            <p className="text-xl font-bold text-primary">{formatTime(totalTime)}</p>
-            <p className="text-xs text-muted-foreground">총 시간</p>
-          </CardContent>
-        </Card>
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-4 border-t border-b border-border py-4">
+        <div className="text-center">
+          <p className="text-xl font-bold text-white">{bookSessions.length}</p>
+          <p className="text-caption mt-1">세션</p>
+        </div>
+        <div className="text-center">
+          <p className="text-xl font-bold text-white">{pagesReadTotal}</p>
+          <p className="text-caption mt-1">페이지</p>
+        </div>
+        <div className="text-center">
+          <p className="text-xl font-bold text-white">{formatTime(totalTime)}</p>
+          <p className="text-caption mt-1">총 시간</p>
+        </div>
       </div>
 
-      <Card className="bg-card border-border">
-        <CardContent className="p-4 space-y-3">
-          {book.totalPages ? (
-            <>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">읽기 진행률</span>
-                <span className="text-white font-medium">
-                  {book.currentPage || 0} / {book.totalPages} 페이지
-                </span>
-              </div>
-              <Progress value={progressPercent ?? 0} className="h-3" />
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">{progressPercent}%</span>
-                <button
-                  onClick={() => {
-                    setTotalPagesInput(String(book.totalPages))
-                    setEditingTotalPages(true)
-                  }}
-                  className="text-xs text-primary hover:underline"
-                >
-                  수정
-                </button>
-              </div>
-            </>
-          ) : !editingTotalPages ? (
-            <button
-              onClick={() => setEditingTotalPages(true)}
-              className="w-full text-sm text-muted-foreground hover:text-primary transition-colors min-h-[44px] flex items-center justify-center gap-1"
-            >
-              <RulerIcon size={16} className="inline-block mr-1" /> 총 페이지 수 설정
-            </button>
-          ) : null}
-          {editingTotalPages && (
-            <div className="flex gap-2">
-              <Input
-                type="number"
-                placeholder="총 페이지 수"
-                value={totalPagesInput}
-                onChange={(e) => setTotalPagesInput(e.target.value)}
-                className="bg-background border-border min-h-[44px]"
-                min="1"
-                autoFocus
-              />
-              <Button onClick={handleSetTotalPages} className="min-h-[44px]">
-                저장
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setEditingTotalPages(false)
-                  setTotalPagesInput('')
-                }}
-                className="min-h-[44px]"
-              >
-                취소
-              </Button>
+      {/* Progress */}
+      <div className="space-y-3">
+        {book.totalPages ? (
+          <>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">읽기 진행률</span>
+              <span className="text-white font-medium">
+                {book.currentPage || 0} / {book.totalPages} 페이지
+              </span>
             </div>
-          )}
-        </CardContent>
-      </Card>
+            <Progress value={progressPercent ?? 0} />
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">{progressPercent}%</span>
+              <button
+                onClick={() => {
+                  setTotalPagesInput(String(book.totalPages))
+                  setEditingTotalPages(true)
+                }}
+                className="text-xs text-primary hover:underline"
+              >
+                수정
+              </button>
+            </div>
+          </>
+        ) : !editingTotalPages ? (
+          <button
+            onClick={() => setEditingTotalPages(true)}
+            className="w-full text-sm text-muted-foreground hover:text-primary transition-colors min-h-[44px] flex items-center justify-center gap-2"
+          >
+            <RulerIcon size={14} />
+            총 페이지 수 설정
+          </button>
+        ) : null}
+        {editingTotalPages && (
+          <div className="flex gap-2">
+            <Input
+              type="number"
+              placeholder="총 페이지 수"
+              value={totalPagesInput}
+              onChange={(e) => setTotalPagesInput(e.target.value)}
+              className="bg-[#111111] border-border min-h-[44px]"
+              min="1"
+              autoFocus
+            />
+            <Button onClick={handleSetTotalPages} className="min-h-[44px]">
+              저장
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setEditingTotalPages(false)
+                setTotalPagesInput('')
+              }}
+              className="min-h-[44px]"
+            >
+              취소
+            </Button>
+          </div>
+        )}
+      </div>
 
+      {/* Status buttons */}
       <div className="flex gap-2">
         <Button
           variant={book.status === 'reading' ? 'default' : 'outline'}
@@ -223,11 +219,10 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
         </Button>
       </div>
 
+      {/* Captures */}
       {allCaptures.length > 0 && (
-        <div className="space-y-3">
-          <p className="text-sm font-medium text-white">
-            캡처한 글귀 ({allCaptures.length})
-          </p>
+        <div className="space-y-3 border-t border-border pt-6">
+          <p className="text-caption">캡처한 글귀 ({allCaptures.length})</p>
           {allCaptures.map((capture) => (
             <CaptureCard
               key={capture.id}
@@ -238,24 +233,23 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
         </div>
       )}
 
-      <div className="space-y-2 pt-4">
+      {/* Actions */}
+      <div className="space-y-2 pt-4 border-t border-border">
         <Button
           variant="outline"
           onClick={handleExport}
-          className="w-full min-h-[44px]"
+          className="w-full min-h-[44px] gap-2"
         >
-          <span className="flex items-center justify-center gap-2">
-            <ExportIcon size={16} /> 옵시디언으로 내보내기
-          </span>
+          <ExportIcon size={16} />
+          옵시디언으로 내보내기
         </Button>
         <Button
           variant="outline"
           onClick={handleDelete}
-          className="w-full min-h-[44px] text-destructive hover:text-destructive"
+          className="w-full min-h-[44px] text-destructive hover:text-destructive gap-2"
         >
-          <span className="flex items-center justify-center gap-2">
-            <TrashIcon size={16} /> 책 삭제
-          </span>
+          <TrashIcon size={16} />
+          책 삭제
         </Button>
       </div>
     </div>

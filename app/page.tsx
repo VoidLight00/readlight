@@ -2,10 +2,9 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import { StreakCounter } from '@/components/StreakCounter'
 import { WeeklyChart } from '@/components/WeeklyChart'
-import { BookIcon, TrophyIcon } from '@/components/icons'
+import { ChevronRightIcon, PlusIcon, TrophyIcon } from '@/components/icons'
 import { useReadingStore } from '@/lib/reading/store'
 import { useBookStore } from '@/lib/books/store'
 
@@ -25,107 +24,120 @@ export default function Dashboard() {
   const totalCaptures = sessions.reduce((sum, s) => sum + s.captures.length, 0)
 
   const lastReadingBook = books.find((b) => b.status === 'reading')
+  const daysReadThisWeek = weeklyMinutes.filter((m) => m > 0).length
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white">ReadLight</h1>
-        <p className="text-sm text-muted-foreground">독서 동반자</p>
+    <div className="max-w-lg mx-auto px-4 py-8 space-y-8">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-title text-white tracking-tight">READLIGHT</h1>
+        <Link href="/session">
+          <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 gap-1.5">
+            <PlusIcon size={16} />
+            세션
+          </Button>
+        </Link>
       </div>
 
-      <Card className="bg-card border-border">
-        <CardContent className="p-4">
-          <StreakCounter streak={streak} badges={badges} />
-        </CardContent>
-      </Card>
+      {/* Streak hero */}
+      <div className="space-y-4">
+        <p className="text-caption">오늘</p>
+        <StreakCounter streak={streak} badges={badges} />
+        <div className="h-[3px] bg-primary w-full" />
+      </div>
 
-      <Card className="bg-card border-border">
-        <CardContent className="p-4 space-y-3">
-          <p className="text-sm font-medium text-white">오늘의 기록</p>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-2xl font-bold text-primary">
-                {formatTime(todayStats.sessionTime)}
-              </p>
-              <p className="text-xs text-muted-foreground">독서 시간</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-primary">
-                {todayStats.capturesCount}
-              </p>
-              <p className="text-xs text-muted-foreground">캡처한 글귀</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Weekly progress */}
+      <div className="flex items-center gap-4">
+        <p className="text-sm text-muted-foreground">이번 주</p>
+        <div className="flex-1 h-[2px] bg-border relative">
+          <div
+            className="absolute top-0 left-0 h-full bg-primary transition-all"
+            style={{ width: `${(daysReadThisWeek / 7) * 100}%` }}
+          />
+        </div>
+        <p className="text-sm text-white font-medium">{daysReadThisWeek}/7일</p>
+      </div>
 
-      <Link href="/session">
-        <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 min-h-[48px] text-base font-medium">
-          독서 시작하기
-        </Button>
-      </Link>
+      {/* Today stats */}
+      <div className="grid grid-cols-2 gap-6">
+        <div>
+          <p className="text-2xl font-bold text-white">{formatTime(todayStats.sessionTime)}</p>
+          <p className="text-caption mt-1">독서 시간</p>
+        </div>
+        <div>
+          <p className="text-2xl font-bold text-white">{todayStats.capturesCount}</p>
+          <p className="text-caption mt-1">캡처한 글귀</p>
+        </div>
+      </div>
 
+      {/* Last reading book */}
       {lastReadingBook && (
-        <Link href={`/book/${lastReadingBook.id}`}>
-          <Card className="bg-card border-border hover:border-primary/50 transition-colors cursor-pointer mt-3">
-            <CardContent className="p-4 flex items-center gap-3">
-              <BookIcon size={24} className="text-primary shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-white">{lastReadingBook.title}</p>
-                <p className="text-xs text-muted-foreground">이어서 읽기</p>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
+        <div>
+          <p className="text-caption mb-3">마지막으로 읽은 책</p>
+          <Link href={`/book/${lastReadingBook.id}`}>
+            <div className="border-l-[3px] border-l-primary pl-4 py-3 hover:bg-[#111111] transition-colors cursor-pointer">
+              <p className="text-white font-medium">{lastReadingBook.title}</p>
+              <p className="text-sm text-muted-foreground">{lastReadingBook.author}</p>
+              <span className="text-sm text-primary mt-2 inline-flex items-center gap-1">
+                계속 읽기 <ChevronRightIcon size={14} />
+              </span>
+            </div>
+          </Link>
+        </div>
       )}
 
-      <Card className="bg-card border-border">
-        <CardContent className="p-4">
-          <WeeklyChart weeklyMinutes={weeklyMinutes} />
-        </CardContent>
-      </Card>
+      {/* Weekly chart */}
+      <WeeklyChart weeklyMinutes={weeklyMinutes} />
 
-      <div className="grid grid-cols-3 gap-3">
-        <Card className="bg-card border-border">
-          <CardContent className="p-3 text-center">
-            <p className="text-xl font-bold text-primary">{totalBooksCompleted}</p>
-            <p className="text-xs text-muted-foreground">완독한 책</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-card border-border">
-          <CardContent className="p-3 text-center">
-            <p className="text-xl font-bold text-primary">{sessions.length}</p>
-            <p className="text-xs text-muted-foreground">총 세션</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-card border-border">
-          <CardContent className="p-3 text-center">
-            <p className="text-xl font-bold text-primary">{totalCaptures}</p>
-            <p className="text-xs text-muted-foreground">총 글귀</p>
-          </CardContent>
-        </Card>
+      {/* Stats row */}
+      <div className="grid grid-cols-3 gap-4 border-t border-border pt-6">
+        <div className="text-center">
+          <p className="text-xl font-bold text-white">{totalBooksCompleted}</p>
+          <p className="text-caption mt-1">완독한 책</p>
+        </div>
+        <div className="text-center">
+          <p className="text-xl font-bold text-white">{sessions.length}</p>
+          <p className="text-caption mt-1">총 세션</p>
+        </div>
+        <div className="text-center">
+          <p className="text-xl font-bold text-white">{totalCaptures}</p>
+          <p className="text-caption mt-1">총 글귀</p>
+        </div>
       </div>
 
+      {/* Action buttons */}
+      <div className="flex gap-3">
+        <Link href="/session" className="flex-1">
+          <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 min-h-[48px] font-bold">
+            새 책 시작
+          </Button>
+        </Link>
+        <Link href="/library" className="flex-1">
+          <Button variant="outline" className="w-full min-h-[48px] gap-1.5">
+            서재 보기 <ChevronRightIcon size={14} />
+          </Button>
+        </Link>
+      </div>
+
+      {/* Badges */}
       {badges.length > 0 && (
-        <Card className="bg-card border-border">
-          <CardContent className="p-4">
-            <p className="text-sm font-medium text-white mb-3">획득한 배지</p>
-            <div className="flex gap-3 flex-wrap">
-              {badges.map((badge) => (
-                <div
-                  key={badge.type}
-                  className="flex items-center gap-2 bg-secondary px-3 py-2 rounded-lg"
-                >
-                  <TrophyIcon size={16} className="text-primary shrink-0" />
-                  <div>
-                    <p className="text-sm text-white">{badge.name}</p>
-                    <p className="text-xs text-muted-foreground">{badge.description}</p>
-                  </div>
+        <div className="border-t border-border pt-6">
+          <p className="text-caption mb-3">획득한 배지</p>
+          <div className="space-y-2">
+            {badges.map((badge) => (
+              <div
+                key={badge.type}
+                className="flex items-center gap-3 border-l-[2px] border-l-primary pl-3 py-2"
+              >
+                <TrophyIcon size={16} className="text-primary shrink-0" />
+                <div>
+                  <p className="text-sm text-white">{badge.name}</p>
+                  <p className="text-xs text-muted-foreground">{badge.description}</p>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   )

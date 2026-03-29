@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { CaptureForm } from '@/components/CaptureForm'
 import { CaptureCard } from '@/components/CaptureCard'
@@ -49,8 +48,8 @@ export default function CapturePage() {
 
   if (activeSessionId) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
-        <h1 className="text-xl font-bold text-white">글귀 캡처</h1>
+      <div className="max-w-lg mx-auto px-4 py-8 space-y-4">
+        <h1 className="text-title text-white">글귀 캡처</h1>
         <p className="text-sm text-muted-foreground">
           인상 깊은 구절을 기록하세요
         </p>
@@ -61,33 +60,31 @@ export default function CapturePage() {
 
   if (allCaptures.length === 0) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
-        <h1 className="text-xl font-bold text-white">글귀 캡처</h1>
-        <Card className="bg-card border-border">
-          <CardContent className="p-6 text-center">
-            <BookIcon size={40} className="text-muted-foreground mx-auto mb-3" />
-            <p className="text-muted-foreground">
-              세션을 먼저 시작해주세요
-            </p>
-            <p className="text-sm text-muted-foreground mt-1">
-              세션 탭에서 책을 선택하고 독서를 시작하세요
-            </p>
-          </CardContent>
-        </Card>
+      <div className="max-w-lg mx-auto px-4 py-8 space-y-4">
+        <h1 className="text-title text-white">글귀 캡처</h1>
+        <div className="border border-border p-8 text-center">
+          <BookIcon size={32} className="text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground">
+            세션을 먼저 시작해주세요
+          </p>
+          <p className="text-sm text-muted-foreground mt-1">
+            세션 탭에서 책을 선택하고 독서를 시작하세요
+          </p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
-      <h1 className="text-xl font-bold text-white">
+    <div className="max-w-lg mx-auto px-4 py-8 space-y-4">
+      <h1 className="text-title text-white">
         저장된 글귀 ({allCaptures.length}개)
       </h1>
       <Input
         placeholder="구절이나 태그로 검색..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="bg-card border-border min-h-[44px]"
+        className="bg-[#111111] border-border min-h-[44px]"
       />
 
       <div className="space-y-3">

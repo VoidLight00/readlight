@@ -3,9 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { PlayIcon, PauseIcon, PenIcon } from '@/components/icons'
+import { PlayIcon, PauseIcon, PenIcon, PlusIcon, ArrowLeftIcon, CheckIcon } from '@/components/icons'
 import { useBookStore } from '@/lib/books/store'
 import { useReadingStore } from '@/lib/reading/store'
 import { fetchBookCover } from '@/lib/books/cover-service'
@@ -36,7 +35,6 @@ export default function SessionPage() {
   const activeSession = getActiveSession()
   const isPaused = !!activeSession?.pausedAt
 
-  // Derive phase: if there's an active session, override to 'active'
   const phase = (activeSessionId && activeSession && manualPhase !== 'end')
     ? 'active'
     : manualPhase
@@ -54,7 +52,6 @@ export default function SessionPage() {
       return now - start - (session.totalPausedMs || 0)
     }
 
-    // Use immediate interval: first tick at 0ms, then every 1s
     setElapsed(calcElapsed()) // eslint-disable-line react-hooks/set-state-in-effect
 
     const interval = setInterval(() => {
@@ -80,7 +77,6 @@ export default function SessionPage() {
     setShowNewBook(false)
     setManualPhase('goal')
 
-    // Fetch cover in background — don't block UI
     fetchBookCover(title, author).then((coverUrl) => {
       if (coverUrl) {
         updateBook(book.id, { coverUrl })
@@ -116,23 +112,21 @@ export default function SessionPage() {
     const readingBooks = books.filter((b) => b.status === 'reading')
 
     return (
-      <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
-        <h1 className="text-xl font-bold text-white">독서 세션</h1>
+      <div className="max-w-lg mx-auto px-4 py-8 space-y-6">
+        <h1 className="text-title text-white">독서 세션</h1>
         <p className="text-sm text-muted-foreground">어떤 책을 읽을까요?</p>
 
         {readingBooks.length > 0 && (
           <div className="space-y-2">
             {readingBooks.map((book) => (
-              <Card
+              <div
                 key={book.id}
-                className="bg-card border-border hover:border-primary/50 transition-colors cursor-pointer"
+                className="border border-border hover:border-primary/50 transition-colors cursor-pointer p-4"
                 onClick={() => handleSelectBook(book)}
               >
-                <CardContent className="p-4">
-                  <p className="font-medium text-white">{book.title}</p>
-                  <p className="text-sm text-muted-foreground">{book.author}</p>
-                </CardContent>
-              </Card>
+                <p className="font-medium text-white">{book.title}</p>
+                <p className="text-sm text-muted-foreground">{book.author}</p>
+              </div>
             ))}
           </div>
         )}
@@ -140,43 +134,42 @@ export default function SessionPage() {
         {!showNewBook ? (
           <Button
             variant="outline"
-            className="w-full min-h-[44px]"
+            className="w-full min-h-[44px] gap-1.5"
             onClick={() => setShowNewBook(true)}
           >
-            + 새 책 추가
+            <PlusIcon size={16} />
+            새 책 추가
           </Button>
         ) : (
-          <Card className="bg-card border-border">
-            <CardContent className="p-4 space-y-3">
-              <Input
-                placeholder="책 제목"
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-                className="bg-background border-border"
-              />
-              <Input
-                placeholder="저자"
-                value={newAuthor}
-                onChange={(e) => setNewAuthor(e.target.value)}
-                className="bg-background border-border"
-              />
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleAddBook}
-                  disabled={!newTitle.trim()}
-                  className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
-                >
-                  추가
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowNewBook(false)}
-                >
-                  취소
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="border border-border p-4 space-y-3">
+            <Input
+              placeholder="책 제목"
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              className="bg-[#111111] border-border"
+            />
+            <Input
+              placeholder="저자"
+              value={newAuthor}
+              onChange={(e) => setNewAuthor(e.target.value)}
+              className="bg-[#111111] border-border"
+            />
+            <div className="flex gap-2">
+              <Button
+                onClick={handleAddBook}
+                disabled={!newTitle.trim()}
+                className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                추가
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowNewBook(false)}
+              >
+                취소
+              </Button>
+            </div>
+          </div>
         )}
       </div>
     )
@@ -184,31 +177,27 @@ export default function SessionPage() {
 
   if (phase === 'goal') {
     return (
-      <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
-        <h1 className="text-xl font-bold text-white">목표 설정</h1>
-        <Card className="bg-card border-border">
-          <CardContent className="p-4">
-            <p className="font-medium text-white">{selectedBook?.title}</p>
-            <p className="text-sm text-muted-foreground">{selectedBook?.author}</p>
-          </CardContent>
-        </Card>
+      <div className="max-w-lg mx-auto px-4 py-8 space-y-6">
+        <h1 className="text-title text-white">목표 설정</h1>
+        <div className="border-l-[3px] border-l-primary pl-4 py-2">
+          <p className="font-medium text-white">{selectedBook?.title}</p>
+          <p className="text-sm text-muted-foreground">{selectedBook?.author}</p>
+        </div>
 
         <div className="space-y-2">
-          <label className="text-sm text-muted-foreground">
-            오늘 목표 페이지 수
-          </label>
+          <label className="text-caption">오늘 목표 페이지 수</label>
           <Input
             type="number"
             value={pageGoal}
             onChange={(e) => setPageGoal(e.target.value)}
-            className="bg-card border-border text-center text-2xl"
+            className="bg-[#111111] border-border text-center text-2xl"
             min="1"
           />
         </div>
 
         <Button
           onClick={handleStartSession}
-          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 min-h-[48px] text-base font-medium"
+          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 min-h-[48px] font-bold"
         >
           세션 시작
         </Button>
@@ -218,50 +207,56 @@ export default function SessionPage() {
 
   if (phase === 'active') {
     return (
-      <div className="max-w-lg mx-auto px-4 py-6 space-y-6">
-        <div className="text-center space-y-2">
-          <p className="text-sm text-muted-foreground">{selectedBook?.title || '독서 중'}</p>
-          <p className="text-5xl font-mono font-bold text-white" style={{ fontVariantNumeric: 'tabular-nums' }}>
-            {formatTimer(elapsed)}
-          </p>
-          {isPaused && (
-            <p className="text-sm text-yellow-400 animate-pulse">일시정지 중...</p>
-          )}
+      <div className="max-w-lg mx-auto px-4 py-8 space-y-8">
+        <div className="flex items-center justify-between">
+          <button onClick={() => router.push('/')} className="text-muted-foreground hover:text-white transition-colors">
+            <ArrowLeftIcon size={20} />
+          </button>
           <p className="text-sm text-muted-foreground">
-            목표: {activeSession?.pageGoal || pageGoal}페이지
+            목표: {activeSession?.pageGoal || pageGoal}쪽
           </p>
         </div>
 
-        <Button
-          variant="outline"
-          className="w-full min-h-[44px]"
-          onClick={() => isPaused ? resumeSession() : pauseSession()}
-        >
-          <span className="flex items-center gap-2">
+        <div className="text-center space-y-1">
+          <p className="text-sm text-white">{selectedBook?.title || '독서 중'}</p>
+          <p className="text-caption">{selectedBook?.author}</p>
+        </div>
+
+        <div className="text-center space-y-4">
+          <p className="text-5xl font-mono font-bold text-white tracking-wider" style={{ fontVariantNumeric: 'tabular-nums' }}>
+            {formatTimer(elapsed)}
+          </p>
+          <div className="w-24 h-[2px] bg-primary mx-auto" />
+          {isPaused && (
+            <p className="text-sm text-primary">일시정지 중</p>
+          )}
+        </div>
+
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            className="flex-1 min-h-[44px] gap-2"
+            onClick={() => isPaused ? resumeSession() : pauseSession()}
+          >
             {isPaused ? <><PlayIcon size={16} /> 재개</> : <><PauseIcon size={16} /> 일시정지</>}
-          </span>
-        </Button>
+          </Button>
+          <Button
+            variant="outline"
+            className="flex-1 min-h-[44px] gap-2"
+            onClick={() => router.push('/capture')}
+          >
+            <PenIcon size={16} /> 캡처하기
+          </Button>
+        </div>
 
-        <Button
-          variant="outline"
-          className="w-full min-h-[44px]"
-          onClick={() => router.push('/capture')}
-        >
-          <span className="flex items-center gap-2">
-            <PenIcon size={16} /> 글귀 캡처하기
-          </span>
-        </Button>
-
-        <div className="space-y-3">
-          <label className="text-sm text-muted-foreground">
-            읽은 페이지 수
-          </label>
+        <div className="border-t border-border pt-6 space-y-3">
+          <label className="text-caption">읽은 페이지 수</label>
           <Input
             type="number"
             placeholder="0"
             value={pagesRead}
             onChange={(e) => setPagesRead(e.target.value)}
-            className="bg-card border-border text-center text-xl"
+            className="bg-[#111111] border-border text-center text-xl"
             min="0"
           />
           <Button
@@ -276,8 +271,9 @@ export default function SessionPage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-6 space-y-6 text-center">
-      <h1 className="text-xl font-bold text-white">세션 완료!</h1>
+    <div className="max-w-lg mx-auto px-4 py-8 space-y-6 text-center">
+      <CheckIcon size={40} className="text-primary mx-auto" />
+      <h1 className="text-title text-white">세션 완료</h1>
       <p className="text-muted-foreground">
         {formatTimer(elapsed)} 동안 {pagesRead || 0}페이지를 읽었습니다
       </p>

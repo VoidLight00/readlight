@@ -28,8 +28,8 @@ export default function LibraryPage() {
     : books.filter((b) => b.status === tab)
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
-      <h1 className="text-xl font-bold text-white">서재</h1>
+    <div className="max-w-lg mx-auto px-4 py-8 space-y-4">
+      <h1 className="text-title text-white">서재</h1>
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="bg-secondary">
@@ -42,7 +42,7 @@ export default function LibraryPage() {
         <TabsContent value={tab} className="mt-4">
           {filteredBooks.length === 0 ? (
             <div className="text-center py-12">
-              <LibraryIcon size={40} className="text-muted-foreground mx-auto mb-3" />
+              <LibraryIcon size={32} className="text-muted-foreground mx-auto mb-3" />
               <p className="text-muted-foreground">아직 등록된 책이 없습니다</p>
               <p className="text-sm text-muted-foreground mt-1">
                 세션 탭에서 새 책을 추가해보세요
