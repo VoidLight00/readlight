@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json()
-  const { book, author, page, question, captures } = body
+  const { book, author, page, question, captures, sessionKey } = body
 
   if (!question || typeof question !== 'string' || !question.trim()) {
     return NextResponse.json({ error: '질문을 입력해주세요' }, { status: 400 })
@@ -32,6 +32,9 @@ export async function POST(req: NextRequest) {
           .slice(0, 3)
           .map((c: string) => `• ${c.slice(0, 100)}${c.length > 100 ? '…' : ''}`)
           .join('\n')}`
+      : '',
+    sessionKey
+      ? `\n📬 *답변 방법:*\nPOST https://readlight-one.vercel.app/api/store-reply\nHeader: x-kraken-token\nBody: {"sessionKey":"${sessionKey}","text":"답변 내용"}`
       : '',
   ]
     .filter(Boolean)
