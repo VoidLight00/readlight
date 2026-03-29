@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { SparkleIcon, XIcon } from '@/components/icons'
 import { getPassageInsights } from '@/lib/reading/ai-service'
 import type { AIInsight } from '@/types'
 
@@ -29,15 +29,16 @@ export function AICompanion({ passage, onInsightsGenerated }: AICompanionProps) 
 
   if (state === 'prompt') {
     return (
-      <div className="flex items-center gap-3 p-3 bg-primary/10 rounded-lg border border-primary/20">
-        <span className="text-sm text-primary">탐구할까요?</span>
+      <div className="flex items-center gap-3 p-3 border-l-[3px] border-l-primary bg-surface-1">
+        <SparkleIcon size={16} className="text-primary shrink-0" />
+        <span className="text-sm text-muted-foreground">탐구할까요?</span>
         <Button
           size="sm"
           variant="ghost"
-          className="text-primary hover:bg-primary/20"
+          className="text-primary"
           onClick={handleExplore}
         >
-          네!
+          네
         </Button>
         <Button
           size="sm"
@@ -53,8 +54,9 @@ export function AICompanion({ passage, onInsightsGenerated }: AICompanionProps) 
 
   if (state === 'loading') {
     return (
-      <div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
-        <p className="text-sm text-primary animate-pulse">생각하는 중...</p>
+      <div className="flex items-center gap-3 p-3 border-l-[3px] border-l-primary bg-[#111111]">
+        <SparkleIcon size={16} className="text-primary shrink-0" />
+        <p className="text-sm text-muted-foreground">생각하는 중...</p>
       </div>
     )
   }
@@ -65,37 +67,39 @@ export function AICompanion({ passage, onInsightsGenerated }: AICompanionProps) 
 
   if (state === 'result' && insights) {
     return (
-      <Card className="bg-primary/5 border-primary/20">
-        <CardContent className="p-4 space-y-3">
-          <div>
-            <p className="text-xs text-primary font-medium mb-2">인사이트</p>
-            <ul className="space-y-1">
-              {insights.bullets.map((bullet, i) => (
-                <li key={i} className="text-sm text-muted-foreground flex gap-2">
-                  <span className="text-primary">•</span>
-                  {bullet}
-                </li>
-              ))}
-            </ul>
-          </div>
+      <div className="border-l-[3px] border-l-primary bg-[#111111] p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <SparkleIcon size={16} className="text-primary" />
+          <button onClick={() => setState('error')} className="text-muted-foreground">
+            <XIcon size={14} />
+          </button>
+        </div>
 
-          <div>
-            <p className="text-xs text-primary font-medium mb-1">생각해볼 질문</p>
-            <p className="text-sm text-white italic">{insights.question}</p>
-          </div>
+        <ul className="space-y-1">
+          {insights.bullets.map((bullet, i) => (
+            <li key={i} className="text-sm text-muted-foreground flex gap-2">
+              <span className="text-primary">·</span>
+              {bullet}
+            </li>
+          ))}
+        </ul>
 
-          <div className="flex gap-2 flex-wrap">
-            {insights.keywords.map((keyword) => (
-              <span
-                key={keyword}
-                className="text-xs bg-secondary px-2 py-1 rounded text-muted-foreground"
-              >
-                {keyword}
-              </span>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+        <div>
+          <p className="text-caption mb-1">생각해볼 질문</p>
+          <p className="text-sm text-white italic">{insights.question}</p>
+        </div>
+
+        <div className="flex gap-2 flex-wrap">
+          {insights.keywords.map((keyword) => (
+            <span
+              key={keyword}
+              className="text-xs border border-border px-2 py-1 text-muted-foreground"
+            >
+              {keyword}
+            </span>
+          ))}
+        </div>
+      </div>
     )
   }
 

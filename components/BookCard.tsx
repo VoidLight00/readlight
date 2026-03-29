@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { BookIcon, ChevronRightIcon } from '@/components/icons'
 import type { Book } from '@/types'
 
 interface BookCardProps {
@@ -44,11 +45,11 @@ export function BookCard({ book, sessionsCount = 0, capturesCount = 0, totalTime
                 alt={book.title}
                 width={48}
                 height={64}
-                className="w-12 h-16 rounded object-cover shrink-0"
+                className="w-12 h-16 object-cover shrink-0"
               />
             ) : (
-              <div className="w-12 h-16 rounded bg-secondary flex items-center justify-center shrink-0 text-xl">
-                📖
+              <div className="w-12 h-16 bg-secondary flex items-center justify-center shrink-0 text-muted-foreground">
+                <BookIcon size={20} />
               </div>
             )}
             <div className="flex-1 min-w-0">
@@ -61,10 +62,11 @@ export function BookCard({ book, sessionsCount = 0, capturesCount = 0, totalTime
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground mb-2">{book.author}</p>
-              <div className="flex gap-3 text-xs text-muted-foreground">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
                 <span>{sessionsCount}회 세션</span>
                 <span>{capturesCount}개 글귀</span>
                 {totalTime > 0 && <span>{formatTime(totalTime)}</span>}
+                <ChevronRightIcon size={14} className="ml-auto text-muted-foreground" />
               </div>
             </div>
           </div>

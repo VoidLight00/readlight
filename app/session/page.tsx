@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { PlayIcon, PauseIcon, PenIcon } from '@/components/icons'
 import { useBookStore } from '@/lib/books/store'
 import { useReadingStore } from '@/lib/reading/store'
 import { fetchBookCover } from '@/lib/books/cover-service'
@@ -220,7 +221,7 @@ export default function SessionPage() {
       <div className="max-w-lg mx-auto px-4 py-6 space-y-6">
         <div className="text-center space-y-2">
           <p className="text-sm text-muted-foreground">{selectedBook?.title || '독서 중'}</p>
-          <p className="text-5xl font-mono font-bold text-white">
+          <p className="text-5xl font-mono font-bold text-white" style={{ fontVariantNumeric: 'tabular-nums' }}>
             {formatTimer(elapsed)}
           </p>
           {isPaused && (
@@ -236,7 +237,9 @@ export default function SessionPage() {
           className="w-full min-h-[44px]"
           onClick={() => isPaused ? resumeSession() : pauseSession()}
         >
-          {isPaused ? '▶️ 재개' : '⏸ 일시정지'}
+          <span className="flex items-center gap-2">
+            {isPaused ? <><PlayIcon size={16} /> 재개</> : <><PauseIcon size={16} /> 일시정지</>}
+          </span>
         </Button>
 
         <Button
@@ -244,7 +247,9 @@ export default function SessionPage() {
           className="w-full min-h-[44px]"
           onClick={() => router.push('/capture')}
         >
-          ✏️ 글귀 캡처하기
+          <span className="flex items-center gap-2">
+            <PenIcon size={16} /> 글귀 캡처하기
+          </span>
         </Button>
 
         <div className="space-y-3">
@@ -272,7 +277,6 @@ export default function SessionPage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 py-6 space-y-6 text-center">
-      <div className="text-4xl">🎉</div>
       <h1 className="text-xl font-bold text-white">세션 완료!</h1>
       <p className="text-muted-foreground">
         {formatTimer(elapsed)} 동안 {pagesRead || 0}페이지를 읽었습니다

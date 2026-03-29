@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardContent } from '@/components/ui/card'
 import { AICompanion } from '@/components/AICompanion'
+import { CameraIcon, SparkleIcon } from '@/components/icons'
 import { getTagSuggestions } from '@/lib/reading/ai-service'
 import type { AIInsight } from '@/types'
 
@@ -105,7 +105,7 @@ export function CaptureForm({ onSave }: CaptureFormProps) {
         <TabsContent value="text">
           <textarea
             placeholder="인상 깊은 구절을 입력하세요..."
-            className="w-full min-h-[120px] bg-card border border-border rounded-lg p-3 text-white placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full min-h-[120px] bg-[#111111] border border-border p-3 text-white placeholder:text-muted-foreground resize-none focus:outline-none focus:border-primary"
             value={passage}
             onChange={(e) => setPassage(e.target.value)}
             disabled={saved}
@@ -113,22 +113,21 @@ export function CaptureForm({ onSave }: CaptureFormProps) {
         </TabsContent>
 
         <TabsContent value="camera">
-          <Card className="bg-card border-border">
-            <CardContent className="p-6 text-center">
-              <Button
-                onClick={handleOCR}
-                disabled={ocrLoading}
-                className="bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                {ocrLoading ? '인식 중...' : '📷 사진 찍기'}
-              </Button>
-              {passage && (
-                <p className="mt-3 text-sm text-muted-foreground">
-                  인식된 텍스트가 입력되었습니다
-                </p>
-              )}
-            </CardContent>
-          </Card>
+          <div className="border border-border bg-[#111111] p-6 text-center">
+            <Button
+              onClick={handleOCR}
+              disabled={ocrLoading}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              <CameraIcon size={16} />
+              <span className="ml-2">{ocrLoading ? '인식 중...' : '사진 찍기'}</span>
+            </Button>
+            {passage && (
+              <p className="mt-3 text-sm text-muted-foreground">
+                인식된 텍스트가 입력되었습니다
+              </p>
+            )}
+          </div>
         </TabsContent>
       </Tabs>
 
@@ -136,7 +135,7 @@ export function CaptureForm({ onSave }: CaptureFormProps) {
         <>
           <textarea
             placeholder="개인 메모 (선택사항)"
-            className="w-full min-h-[60px] bg-card border border-border rounded-lg p-3 text-white placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full min-h-[60px] bg-[#111111] border border-border p-3 text-white placeholder:text-muted-foreground resize-none focus:outline-none focus:border-primary"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             disabled={saved}
@@ -150,16 +149,17 @@ export function CaptureForm({ onSave }: CaptureFormProps) {
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
                 disabled={saved}
-                className="bg-card border-border"
+                className="bg-[#111111] border-border"
               />
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleSuggestTags}
                 disabled={saved}
-                className="shrink-0"
+                className="shrink-0 gap-1.5"
               >
-                AI 태그
+                <SparkleIcon size={14} />
+                태그
               </Button>
             </div>
 
@@ -168,7 +168,7 @@ export function CaptureForm({ onSave }: CaptureFormProps) {
                 {tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs bg-secondary px-2 py-1 rounded flex items-center gap-1"
+                    className="text-xs border border-border px-2 py-1 flex items-center gap-1"
                   >
                     #{tag}
                     {!saved && (
@@ -188,13 +188,20 @@ export function CaptureForm({ onSave }: CaptureFormProps) {
       )}
 
       {!saved ? (
-        <Button
-          onClick={handleSave}
-          disabled={!passage.trim()}
-          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 min-h-[44px]"
-        >
-          저장하기
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            onClick={handleSave}
+            disabled={!passage.trim()}
+            className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 min-h-[44px]"
+          >
+            저장하기
+          </Button>
+          {passage.length > 0 && (
+            <span className="text-xs text-muted-foreground shrink-0">
+              {passage.length}자
+            </span>
+          )}
+        </div>
       ) : (
         <div className="space-y-3">
           {showAI && (

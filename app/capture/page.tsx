@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { CaptureForm } from '@/components/CaptureForm'
 import { CaptureCard } from '@/components/CaptureCard'
+import { BookIcon } from '@/components/icons'
 import { useReadingStore } from '@/lib/reading/store'
 import { useBookStore } from '@/lib/books/store'
 import type { AIInsight } from '@/types'
@@ -64,7 +65,7 @@ export default function CapturePage() {
         <h1 className="text-xl font-bold text-white">글귀 캡처</h1>
         <Card className="bg-card border-border">
           <CardContent className="p-6 text-center">
-            <p className="text-4xl mb-3">📖</p>
+            <BookIcon size={40} className="text-muted-foreground mx-auto mb-3" />
             <p className="text-muted-foreground">
               세션을 먼저 시작해주세요
             </p>

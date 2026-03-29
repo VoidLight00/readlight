@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { StreakCounter } from '@/components/StreakCounter'
 import { WeeklyChart } from '@/components/WeeklyChart'
+import { BookIcon, TrophyIcon } from '@/components/icons'
 import { useReadingStore } from '@/lib/reading/store'
 import { useBookStore } from '@/lib/books/store'
 
@@ -68,7 +69,7 @@ export default function Dashboard() {
         <Link href={`/book/${lastReadingBook.id}`}>
           <Card className="bg-card border-border hover:border-primary/50 transition-colors cursor-pointer mt-3">
             <CardContent className="p-4 flex items-center gap-3">
-              <span className="text-2xl">📖</span>
+              <BookIcon size={24} className="text-primary shrink-0" />
               <div>
                 <p className="text-sm font-medium text-white">{lastReadingBook.title}</p>
                 <p className="text-xs text-muted-foreground">이어서 읽기</p>
@@ -115,7 +116,7 @@ export default function Dashboard() {
                   key={badge.type}
                   className="flex items-center gap-2 bg-secondary px-3 py-2 rounded-lg"
                 >
-                  <span>🏆</span>
+                  <TrophyIcon size={16} className="text-primary shrink-0" />
                   <div>
                     <p className="text-sm text-white">{badge.name}</p>
                     <p className="text-xs text-muted-foreground">{badge.description}</p>

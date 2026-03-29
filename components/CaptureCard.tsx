@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Pencil, Trash2, Check, X } from 'lucide-react'
+import { EditIcon, TrashIcon, CheckIcon, XIcon } from '@/components/icons'
 import { useReadingStore } from '@/lib/reading/store'
 import type { Capture } from '@/types'
 
@@ -62,7 +62,7 @@ export function CaptureCard({ capture, sessionId, bookInfo }: CaptureCardProps) 
       <Card className="bg-card border-border">
         <CardContent className="p-4 space-y-3">
           <textarea
-            className="w-full min-h-[80px] bg-background border border-border rounded-lg p-3 text-white placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full min-h-[80px] bg-[#111111] border border-border p-3 text-white placeholder:text-muted-foreground resize-none focus:outline-none focus:border-primary"
             value={passage}
             onChange={(e) => setPassage(e.target.value)}
           />
@@ -70,7 +70,7 @@ export function CaptureCard({ capture, sessionId, bookInfo }: CaptureCardProps) 
             placeholder="메모 (선택사항)"
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className="bg-background border-border"
+            className="bg-[#111111] border-border"
           />
           <div className="space-y-2">
             <div className="flex gap-2">
@@ -84,7 +84,7 @@ export function CaptureCard({ capture, sessionId, bookInfo }: CaptureCardProps) 
                     handleAddTag()
                   }
                 }}
-                className="bg-background border-border"
+                className="bg-[#111111] border-border"
               />
             </div>
             {tags.length > 0 && (
@@ -92,7 +92,7 @@ export function CaptureCard({ capture, sessionId, bookInfo }: CaptureCardProps) 
                 {tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs bg-secondary px-2 py-1 rounded flex items-center gap-1"
+                    className="text-xs border border-border px-2 py-1 flex items-center gap-1"
                   >
                     #{tag}
                     <button
@@ -112,16 +112,16 @@ export function CaptureCard({ capture, sessionId, bookInfo }: CaptureCardProps) 
               disabled={!passage.trim()}
               className="flex-1 min-h-[44px]"
             >
-              <Check className="w-4 h-4 mr-1" />
-              저장
+              <CheckIcon size={16} />
+              <span className="ml-1">저장</span>
             </Button>
             <Button
               variant="outline"
               onClick={handleCancel}
               className="flex-1 min-h-[44px]"
             >
-              <X className="w-4 h-4 mr-1" />
-              취소
+              <XIcon size={16} />
+              <span className="ml-1">취소</span>
             </Button>
           </div>
         </CardContent>
@@ -139,17 +139,17 @@ export function CaptureCard({ capture, sessionId, bookInfo }: CaptureCardProps) 
         {capture.tags.length > 0 && (
           <div className="flex gap-1 flex-wrap">
             {capture.tags.map((tag) => (
-              <span key={tag} className="text-xs bg-secondary px-1.5 py-0.5 rounded">
+              <span key={tag} className="text-xs border border-border px-1.5 py-0.5">
                 #{tag}
               </span>
             ))}
           </div>
         )}
         {capture.aiInsights && (
-          <div className="mt-2 p-2 bg-primary/5 rounded border border-primary/10">
+          <div className="mt-2 p-2 border-l-[2px] border-l-primary bg-[#111111]">
             <ul className="text-xs text-muted-foreground space-y-1">
               {capture.aiInsights.bullets.map((b, i) => (
-                <li key={i}>• {b}</li>
+                <li key={i}>· {b}</li>
               ))}
             </ul>
           </div>
@@ -162,14 +162,14 @@ export function CaptureCard({ capture, sessionId, bookInfo }: CaptureCardProps) 
               className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:text-primary transition-colors"
               aria-label="편집"
             >
-              <Pencil className="w-4 h-4" />
+              <EditIcon size={16} />
             </button>
             <button
               onClick={handleDelete}
               className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:text-destructive transition-colors"
               aria-label="삭제"
             >
-              <Trash2 className="w-4 h-4" />
+              <TrashIcon size={16} />
             </button>
           </div>
         </div>

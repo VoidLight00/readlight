@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { BookCard } from '@/components/BookCard'
+import { LibraryIcon } from '@/components/icons'
 import { useBookStore } from '@/lib/books/store'
 import { useReadingStore } from '@/lib/reading/store'
 
@@ -41,7 +42,7 @@ export default function LibraryPage() {
         <TabsContent value={tab} className="mt-4">
           {filteredBooks.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-4xl mb-3">📚</p>
+              <LibraryIcon size={40} className="text-muted-foreground mx-auto mb-3" />
               <p className="text-muted-foreground">아직 등록된 책이 없습니다</p>
               <p className="text-sm text-muted-foreground mt-1">
                 세션 탭에서 새 책을 추가해보세요

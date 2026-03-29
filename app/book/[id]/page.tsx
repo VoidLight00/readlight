@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
+import { BookIcon, ExportIcon, TrashIcon, RulerIcon } from '@/components/icons'
 import { useBookStore } from '@/lib/books/store'
 import { useReadingStore } from '@/lib/reading/store'
 import { CaptureCard } from '@/components/CaptureCard'
@@ -98,8 +99,8 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
             className="w-20 h-[110px] rounded object-cover shrink-0"
           />
         ) : (
-          <div className="w-20 h-[110px] rounded bg-secondary flex items-center justify-center shrink-0 text-3xl">
-            📖
+          <div className="w-20 h-[110px] rounded bg-secondary flex items-center justify-center shrink-0">
+            <BookIcon size={32} className="text-muted-foreground" />
           </div>
         )}
         <div className="flex-1 min-w-0">
@@ -163,7 +164,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
               onClick={() => setEditingTotalPages(true)}
               className="w-full text-sm text-muted-foreground hover:text-primary transition-colors min-h-[44px] flex items-center justify-center gap-1"
             >
-              📏 총 페이지 수 설정
+              <RulerIcon size={16} className="inline-block mr-1" /> 총 페이지 수 설정
             </button>
           ) : null}
           {editingTotalPages && (
@@ -243,14 +244,18 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
           onClick={handleExport}
           className="w-full min-h-[44px]"
         >
-          📝 옵시디언으로 내보내기
+          <span className="flex items-center justify-center gap-2">
+            <ExportIcon size={16} /> 옵시디언으로 내보내기
+          </span>
         </Button>
         <Button
           variant="outline"
           onClick={handleDelete}
           className="w-full min-h-[44px] text-destructive hover:text-destructive"
         >
-          책 삭제
+          <span className="flex items-center justify-center gap-2">
+            <TrashIcon size={16} /> 책 삭제
+          </span>
         </Button>
       </div>
     </div>
