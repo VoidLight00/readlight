@@ -19,7 +19,7 @@ function formatTimer(ms: number): string {
 
 export default function SessionPage() {
   const router = useRouter()
-  const { books, addBook } = useBookStore()
+  const { books, addBook, getBook, updateBook } = useBookStore()
   const { activeSessionId, startSession, endSession, getActiveSession, updateWeeklyMinutes } = useReadingStore()
 
   const [phase, setPhase] = useState<'select' | 'goal' | 'active' | 'end'>('select')
@@ -80,8 +80,18 @@ export default function SessionPage() {
     const minutes = Math.floor(elapsed / 60000)
     endSession(pages)
     updateWeeklyMinutes(minutes)
+
+    if (selectedBook && pages > 0) {
+      const currentBook = getBook(selectedBook.id)
+      if (currentBook) {
+        updateBook(selectedBook.id, {
+          currentPage: (currentBook.currentPage || 0) + pages,
+        })
+      }
+    }
+
     setPhase('end')
-  }, [pagesRead, elapsed, endSession, updateWeeklyMinutes])
+  }, [pagesRead, elapsed, endSession, updateWeeklyMinutes, selectedBook, getBook, updateBook])
 
   if (phase === 'select') {
     const readingBooks = books.filter((b) => b.status === 'reading')

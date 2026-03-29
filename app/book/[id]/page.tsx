@@ -1,10 +1,12 @@
 'use client'
 
-import { use } from 'react'
+import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Progress } from '@/components/ui/progress'
 import { useBookStore } from '@/lib/books/store'
 import { useReadingStore } from '@/lib/reading/store'
 import { generateMarkdown, getExportFilename, downloadMarkdown } from '@/lib/storage/obsidian'
@@ -41,13 +43,29 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
     )
   }
 
+  const [editingTotalPages, setEditingTotalPages] = useState(false)
+  const [totalPagesInput, setTotalPagesInput] = useState('')
+
   const bookSessions = sessions.filter((s) => s.bookId === id)
   const totalTime = bookSessions.reduce((total, s) => {
     if (!s.endTime) return total
     return total + (new Date(s.endTime).getTime() - new Date(s.startTime).getTime())
   }, 0)
-  const totalPages = bookSessions.reduce((sum, s) => sum + s.pagesRead, 0)
+  const pagesReadTotal = bookSessions.reduce((sum, s) => sum + s.pagesRead, 0)
   const allCaptures = bookSessions.flatMap((s) => s.captures)
+
+  const progressPercent = book.totalPages
+    ? Math.min(100, Math.round(((book.currentPage || 0) / book.totalPages) * 100))
+    : null
+
+  function handleSetTotalPages() {
+    const pages = parseInt(totalPagesInput)
+    if (pages > 0) {
+      updateBook(id, { totalPages: pages })
+    }
+    setEditingTotalPages(false)
+    setTotalPagesInput('')
+  }
 
   function handleExport() {
     if (!book) return
@@ -86,7 +104,7 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
         </Card>
         <Card className="bg-card border-border">
           <CardContent className="p-3 text-center">
-            <p className="text-xl font-bold text-primary">{totalPages}</p>
+            <p className="text-xl font-bold text-primary">{pagesReadTotal}</p>
             <p className="text-xs text-muted-foreground">페이지</p>
           </CardContent>
         </Card>
@@ -97,6 +115,67 @@ export default function BookDetailPage({ params }: { params: Promise<{ id: strin
           </CardContent>
         </Card>
       </div>
+
+      <Card className="bg-card border-border">
+        <CardContent className="p-4 space-y-3">
+          {book.totalPages ? (
+            <>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">읽기 진행률</span>
+                <span className="text-white font-medium">
+                  {book.currentPage || 0} / {book.totalPages} 페이지
+                </span>
+              </div>
+              <Progress value={progressPercent ?? 0} className="h-3" />
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">{progressPercent}%</span>
+                <button
+                  onClick={() => {
+                    setTotalPagesInput(String(book.totalPages))
+                    setEditingTotalPages(true)
+                  }}
+                  className="text-xs text-primary hover:underline"
+                >
+                  수정
+                </button>
+              </div>
+            </>
+          ) : !editingTotalPages ? (
+            <button
+              onClick={() => setEditingTotalPages(true)}
+              className="w-full text-sm text-muted-foreground hover:text-primary transition-colors min-h-[44px] flex items-center justify-center gap-1"
+            >
+              📏 총 페이지 수 설정
+            </button>
+          ) : null}
+          {editingTotalPages && (
+            <div className="flex gap-2">
+              <Input
+                type="number"
+                placeholder="총 페이지 수"
+                value={totalPagesInput}
+                onChange={(e) => setTotalPagesInput(e.target.value)}
+                className="bg-background border-border min-h-[44px]"
+                min="1"
+                autoFocus
+              />
+              <Button onClick={handleSetTotalPages} className="min-h-[44px]">
+                저장
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setEditingTotalPages(false)
+                  setTotalPagesInput('')
+                }}
+                className="min-h-[44px]"
+              >
+                취소
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="flex gap-2">
         <Button

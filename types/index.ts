@@ -4,6 +4,8 @@ export interface Book {
   author: string
   isbn?: string
   coverUrl?: string
+  totalPages?: number
+  currentPage?: number
   status: 'reading' | 'completed' | 'paused'
   createdAt: string
 }
